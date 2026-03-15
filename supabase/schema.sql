@@ -5,7 +5,7 @@
 create extension if not exists "uuid-ossp";
 
 -- ============================================================
--- PROFILES (extends auth.users)
+-- PROFILES
 -- ============================================================
 create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -20,14 +20,11 @@ alter table profiles enable row level security;
 
 create policy "Users can view own profile" on profiles
   for select using (auth.uid() = id);
-
 create policy "Users can update own profile" on profiles
   for update using (auth.uid() = id);
-
 create policy "Users can insert own profile" on profiles
   for insert with check (auth.uid() = id);
 
--- Auto-create profile on signup
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
@@ -47,7 +44,7 @@ create trigger on_auth_user_created
 -- ============================================================
 create table if not exists categories (
   id uuid primary key default uuid_generate_v4(),
-  user_id uuid references auth.users(id) on delete cascade, -- null = default/system category
+  user_id uuid references auth.users(id) on delete cascade,
   name text not null,
   icon text not null default 'circle',
   color text not null default '#6366f1',
@@ -60,11 +57,9 @@ alter table categories enable row level security;
 
 create policy "Users can view their and default categories" on categories
   for select using (user_id is null or auth.uid() = user_id);
-
 create policy "Users can manage their own categories" on categories
   for all using (auth.uid() = user_id);
 
--- Default categories (system-wide, user_id = null)
 insert into categories (id, user_id, name, icon, color, sort_order) values
   ('00000000-0000-0000-0000-000000000001', null, 'Food & Drinks', 'utensils', '#f59e0b', 1),
   ('00000000-0000-0000-0000-000000000002', null, 'Transport', 'car', '#3b82f6', 2),
@@ -83,7 +78,7 @@ on conflict (id) do nothing;
 create table if not exists budgets (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  month date not null, -- stored as YYYY-MM-01
+  month date not null,
   total_amount numeric(10,2) not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -96,7 +91,7 @@ create policy "Users can manage own budgets" on budgets
   for all using (auth.uid() = user_id);
 
 -- ============================================================
--- GROUPS
+-- GROUPS (no member-check policy yet — added after group_members)
 -- ============================================================
 create table if not exists groups (
   id uuid primary key default uuid_generate_v4(),
@@ -109,18 +104,8 @@ create table if not exists groups (
 
 alter table groups enable row level security;
 
-create policy "Group members can view groups" on groups
-  for select using (
-    exists (
-      select 1 from group_members
-      where group_members.group_id = groups.id
-      and group_members.user_id = auth.uid()
-    )
-  );
-
 create policy "Users can create groups" on groups
   for insert with check (auth.uid() = created_by);
-
 create policy "Group creator can update groups" on groups
   for update using (auth.uid() = created_by);
 
@@ -146,12 +131,20 @@ create policy "Members can view group membership" on group_members
       and gm.user_id = auth.uid()
     )
   );
-
 create policy "Users can join groups" on group_members
   for insert with check (auth.uid() = user_id);
-
 create policy "Users can leave groups" on group_members
   for delete using (auth.uid() = user_id);
+
+-- Now safe to add the groups select policy (group_members exists)
+create policy "Group members can view groups" on groups
+  for select using (
+    exists (
+      select 1 from group_members
+      where group_members.group_id = groups.id
+      and group_members.user_id = auth.uid()
+    )
+  );
 
 -- ============================================================
 -- EXPENSES
@@ -165,7 +158,7 @@ create table if not exists expenses (
   date date not null default current_date,
   is_split boolean not null default false,
   group_id uuid references groups(id) on delete set null,
-  paid_by uuid references auth.users(id), -- who paid (for split)
+  paid_by uuid references auth.users(id),
   notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -182,7 +175,6 @@ create policy "Users can view own expenses and group expenses" on expenses
       and group_members.user_id = auth.uid()
     ))
   );
-
 create policy "Users can manage own expenses" on expenses
   for all using (auth.uid() = user_id);
 
@@ -212,7 +204,6 @@ create policy "Group members can view split expenses" on split_expenses
       and e.user_id = auth.uid()
     )
   );
-
 create policy "Expense owner can manage split" on split_expenses
   for all using (
     exists (
@@ -247,10 +238,8 @@ create policy "Users can view shares involving them" on split_shares
       and e.user_id = auth.uid()
     )
   );
-
 create policy "Users can update own shares" on split_shares
   for update using (auth.uid() = user_id);
-
 create policy "Expense owner can manage shares" on split_shares
   for all using (
     exists (
@@ -277,10 +266,7 @@ create table if not exists settlements (
 alter table settlements enable row level security;
 
 create policy "Users can view settlements involving them" on settlements
-  for select using (
-    auth.uid() = from_user_id or auth.uid() = to_user_id
-  );
-
+  for select using (auth.uid() = from_user_id or auth.uid() = to_user_id);
 create policy "Users can create settlements" on settlements
   for insert with check (auth.uid() = from_user_id);
 
