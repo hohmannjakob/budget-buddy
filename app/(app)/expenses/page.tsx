@@ -23,23 +23,26 @@ export default function ExpensesPage() {
   const total = expenses.reduce((s, e) => s + e.amount, 0)
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Header */}
-      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 px-4 pt-12 pb-4">
-        <h1 className="text-xl font-bold mb-4">Expenses</h1>
+      <div className="px-5 pt-14 pb-5">
+        <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>
+          Expenses
+        </h1>
 
         {/* Month navigation */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-4">
           <button
             onClick={() => setMonthOffset((o) => o - 1)}
-            className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="h-9 w-9 flex items-center justify-center rounded-full transition-colors"
+            style={{ background: '#21262d' }}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" style={{ color: '#f0f6fc' }} />
           </button>
 
           <div className="text-center">
-            <p className="font-semibold">{monthLabel}</p>
-            <p className="text-sm text-neutral-400">
+            <p className="font-semibold" style={{ color: 'var(--foreground)' }}>{monthLabel}</p>
+            <p className="text-sm" style={{ color: '#8b949e' }}>
               {loading ? '…' : formatCurrency(total)} total
             </p>
           </div>
@@ -47,14 +50,15 @@ export default function ExpensesPage() {
           <button
             onClick={() => setMonthOffset((o) => Math.min(o + 1, 0))}
             disabled={monthOffset === 0}
-            className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-30"
+            className="h-9 w-9 flex items-center justify-center rounded-full transition-colors disabled:opacity-30"
+            style={{ background: '#21262d' }}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" style={{ color: '#f0f6fc' }} />
           </button>
         </div>
       </div>
 
-      <div className="py-4">
+      <div className="pb-36">
         <ExpenseList expenses={expenses} loading={loading} />
       </div>
     </div>

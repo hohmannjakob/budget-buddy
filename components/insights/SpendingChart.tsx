@@ -40,19 +40,22 @@ export default function SpendingChart({ expenses, month }: Props) {
   })
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-4">
-      <h3 className="text-sm font-semibold mb-4">Cumulative spending</h3>
+    <div
+      className="rounded-3xl p-5"
+      style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}
+    >
+      <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Cumulative spending</h3>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
-          <CartesianGrid strokeDasharray="3 3" className="stroke-neutral-100 dark:stroke-neutral-800" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(240,246,252,0.06)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: '#9ca3af' }}
+            tick={{ fontSize: 10, fill: '#8b949e' }}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fontSize: 10, fill: '#9ca3af' }}
+            tick={{ fontSize: 10, fill: '#8b949e' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `€${v}`}
@@ -60,9 +63,10 @@ export default function SpendingChart({ expenses, month }: Props) {
           <Tooltip
             formatter={(value) => [`€${Number(value).toFixed(2)}`, 'Spent']}
             contentStyle={{
-              borderRadius: 12,
-              border: 'none',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+              borderRadius: 16,
+              border: '1px solid rgba(240,246,252,0.1)',
+              background: '#1c2128',
+              color: '#f0f6fc',
               fontSize: 12,
             }}
           />
@@ -70,7 +74,7 @@ export default function SpendingChart({ expenses, month }: Props) {
             type="monotone"
             dataKey="total"
             stroke="#6366f1"
-            strokeWidth={2}
+            strokeWidth={2.5}
             dot={false}
             activeDot={{ r: 4, fill: '#6366f1' }}
           />

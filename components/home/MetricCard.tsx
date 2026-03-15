@@ -1,8 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import { cn, formatCurrency, getValueColor } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { METRIC_LABELS, METRIC_DESCRIPTIONS } from '@/lib/constants'
 import type { MetricKey } from '@/lib/types'
 
@@ -12,36 +11,47 @@ interface MetricCardProps {
   index?: number
 }
 
+function getAccentColor(metricKey: MetricKey, value: number): string {
+  if (metricKey === 'you_owe' && value > 0) return '#f59e0b'
+  if (metricKey === 'owed_to_you' && value > 0) return '#10b981'
+  if (metricKey === 'net_balance') return value >= 0 ? '#10b981' : '#f85149'
+  if (metricKey === 'budget_left' || metricKey === 'real_available') {
+    return value > 0 ? '#6366f1' : '#f85149'
+  }
+  return '#6366f1'
+}
+
 export default function MetricCard({ metricKey, value, index = 0 }: MetricCardProps) {
   const isNegative = value < 0
-  const isDebt = metricKey === 'you_owe'
-
-  // Color logic
-  let valueClass = 'text-neutral-900 dark:text-neutral-50'
-  if (metricKey === 'you_owe' && value > 0) valueClass = 'text-amber-500'
-  else if (metricKey === 'owed_to_you' && value > 0) valueClass = 'text-emerald-500'
-  else if (metricKey === 'net_balance') valueClass = value >= 0 ? 'text-emerald-500' : 'text-red-500'
-  else if (metricKey === 'budget_left' || metricKey === 'real_available') {
-    valueClass = value > 0 ? 'text-neutral-900 dark:text-neutral-50' : 'text-red-500'
-  }
+  const accent = getAccentColor(metricKey, value)
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-4 shadow-sm"
+      className="rounded-3xl p-4 flex flex-col justify-between"
+      style={{
+        background: '#161b22',
+        border: '1px solid rgba(240,246,252,0.08)',
+        minHeight: 104,
+      }}
     >
-      <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wide mb-1">
-        {METRIC_LABELS[metricKey]}
-      </p>
-      <p className={cn('text-2xl font-bold tabular-nums', valueClass)}>
-        {formatCurrency(Math.abs(value))}
-        {isNegative && <span className="text-base font-normal ml-1">(over)</span>}
-      </p>
-      <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
-        {METRIC_DESCRIPTIONS[metricKey]}
-      </p>
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: '#8b949e' }}>
+          {METRIC_LABELS[metricKey]}
+        </p>
+        <p className="text-2xl font-black tabular-nums leading-none" style={{ color: 'var(--foreground)' }}>
+          {isNegative && <span className="text-base mr-0.5">-</span>}
+          {formatCurrency(Math.abs(value))}
+        </p>
+        <p className="text-[10px] mt-1.5" style={{ color: '#8b949e' }}>
+          {METRIC_DESCRIPTIONS[metricKey]}
+        </p>
+      </div>
+
+      {/* Accent bar at bottom */}
+      <div className="mt-3 h-0.5 rounded-full" style={{ background: accent, opacity: 0.6 }} />
     </motion.div>
   )
 }

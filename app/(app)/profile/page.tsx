@@ -57,22 +57,28 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 px-4 pt-12 pb-4">
-        <h1 className="text-xl font-bold">Profile</h1>
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <div className="px-5 pt-14 pb-5">
+        <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>Profile</h1>
       </div>
 
-      <div className="px-4 py-5 space-y-4">
+      <div className="px-5 pb-36 space-y-4">
         {/* User info */}
-        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-4 flex items-center gap-3">
+        <div
+          className="rounded-3xl p-4 flex items-center gap-3"
+          style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}
+        >
           <Avatar className="h-14 w-14">
-            <AvatarFallback className="text-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300">
+            <AvatarFallback
+              className="text-lg font-bold"
+              style={{ background: 'rgba(99,102,241,0.2)', color: '#818cf8' }}
+            >
               {getInitials(profile?.name ?? 'U')}
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-semibold text-lg">{profile?.name ?? 'User'}</p>
-            <p className="text-sm text-neutral-400">BudgetBuddy member</p>
+            <p className="font-bold text-lg" style={{ color: 'var(--foreground)' }}>{profile?.name ?? 'User'}</p>
+            <p className="text-sm" style={{ color: '#8b949e' }}>BudgetBuddy member</p>
           </div>
         </div>
 
@@ -81,9 +87,12 @@ export default function ProfilePage() {
 
         {/* Category budgets */}
         {categories.length > 0 && (
-          <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
-            <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
-              <h3 className="font-semibold">Category Limits</h3>
+          <div
+            className="rounded-3xl overflow-hidden"
+            style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}
+          >
+            <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
+              <h3 className="font-semibold" style={{ color: 'var(--foreground)' }}>Category Limits</h3>
             </div>
             {categories.map((cat) => (
               <CategoryBudgetItem key={cat.id} category={cat} />
@@ -92,15 +101,18 @@ export default function ProfilePage() {
         )}
 
         {/* Settings */}
-        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
-          <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
-            <h3 className="font-semibold">Settings</h3>
+        <div
+          className="rounded-3xl overflow-hidden"
+          style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}
+        >
+          <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
+            <h3 className="font-semibold" style={{ color: 'var(--foreground)' }}>Settings</h3>
           </div>
 
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
-              {darkMode ? <Moon className="h-4 w-4 text-neutral-400" /> : <Sun className="h-4 w-4 text-neutral-400" />}
-              <span className="text-sm font-medium">Dark mode</span>
+              <Moon className="h-4 w-4" style={{ color: '#8b949e' }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Dark mode</span>
             </div>
             <Switch
               checked={darkMode}
@@ -112,7 +124,12 @@ export default function ProfilePage() {
         {/* Sign out */}
         <button
           onClick={() => logout()}
-          className="w-full flex items-center justify-center gap-2 rounded-2xl border border-red-200 dark:border-red-900 bg-white dark:bg-neutral-900 py-4 text-red-500 font-medium hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+          className="w-full flex items-center justify-center gap-2 rounded-3xl py-4 font-medium transition-colors"
+          style={{
+            background: 'rgba(248,81,73,0.1)',
+            border: '1px solid rgba(248,81,73,0.2)',
+            color: '#f85149',
+          }}
         >
           <LogOut className="h-4 w-4" />
           Sign out

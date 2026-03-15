@@ -49,80 +49,83 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950">
+    <div className="flex min-h-screen items-center justify-center p-6" style={{ background: 'var(--background)' }}>
       <div className="w-full max-w-sm">
         {/* Logo */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500 mb-4">
-            <span className="text-2xl">💰</span>
+        <div className="mb-10 text-center">
+          <div
+            className="inline-flex h-16 w-16 items-center justify-center rounded-3xl mb-5"
+            style={{ background: '#6366f1' }}
+          >
+            <span className="text-3xl">💰</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">BudgetBuddy</h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Smart budgeting for students</p>
+          <h1 className="text-3xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>BudgetBuddy</h1>
+          <p className="text-sm mt-1" style={{ color: '#8b949e' }}>Smart budgeting for students</p>
         </div>
 
-        <Card className="rounded-2xl shadow-sm dark:bg-neutral-900 dark:border-neutral-800">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl">Welcome back</CardTitle>
-            <CardDescription>Sign in to your account</CardDescription>
-          </CardHeader>
+        <div
+          className="rounded-3xl p-6 space-y-5"
+          style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}
+        >
+          <div>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Welcome back</h2>
+            <p className="text-sm mt-0.5" style={{ color: '#8b949e' }}>Sign in to your account</p>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent className="space-y-4">
-              {serverError && (
-                <div className="rounded-lg bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-600 dark:text-red-400">
-                  {serverError}
-                </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {serverError && (
+              <div className="rounded-2xl px-3 py-2 text-sm" style={{ background: 'rgba(248,81,73,0.1)', color: '#f85149' }}>
+                {serverError}
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <Label htmlFor="email" style={{ color: '#8b949e' }}>Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                {...register('email')}
+                style={{ background: '#21262d', border: '1px solid rgba(240,246,252,0.08)', color: 'var(--foreground)' }}
+              />
+              {errors.email && (
+                <p className="text-xs" style={{ color: '#f85149' }}>{errors.email.message}</p>
               )}
+            </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  {...register('email')}
-                  className="dark:bg-neutral-800 dark:border-neutral-700"
-                />
-                {errors.email && (
-                  <p className="text-xs text-red-500">{errors.email.message}</p>
-                )}
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" style={{ color: '#8b949e' }}>Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+                {...register('password')}
+                style={{ background: '#21262d', border: '1px solid rgba(240,246,252,0.08)', color: 'var(--foreground)' }}
+              />
+              {errors.password && (
+                <p className="text-xs" style={{ color: '#f85149' }}>{errors.password.message}</p>
+              )}
+            </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  {...register('password')}
-                  className="dark:bg-neutral-800 dark:border-neutral-700"
-                />
-                {errors.password && (
-                  <p className="text-xs text-red-500">{errors.password.message}</p>
-                )}
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex-col gap-3 pt-2">
-              <Button
-                type="submit"
-                className="w-full rounded-full bg-indigo-500 hover:bg-indigo-600"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Signing in…' : 'Sign in'}
-              </Button>
-
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="font-medium text-indigo-500 hover:text-indigo-600">
-                  Sign up
-                </Link>
-              </p>
-            </CardFooter>
+            <Button
+              type="submit"
+              className="w-full rounded-full font-semibold"
+              style={{ background: '#6366f1', color: '#fff' }}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Signing in…' : 'Sign in'}
+            </Button>
           </form>
-        </Card>
+
+          <p className="text-sm text-center" style={{ color: '#8b949e' }}>
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="font-semibold" style={{ color: '#818cf8' }}>
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

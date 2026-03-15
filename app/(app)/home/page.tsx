@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
-import { Bell } from 'lucide-react'
+import { Settings2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import MetricCard from '@/components/home/MetricCard'
 import MetricCardCustomizer from '@/components/home/MetricCardCustomizer'
@@ -15,7 +15,7 @@ import { useGroupDebts } from '@/hooks/useGroups'
 import { calculateBudgetMetrics } from '@/lib/calculations'
 import { formatCurrency, getCurrentMonth, getYesterday } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
-import type { MetricKey, Expense, SplitShare, Category } from '@/lib/types'
+import type { MetricKey, SplitShare, Category } from '@/lib/types'
 
 export default function HomePage() {
   const { profile, loading: profileLoading } = useProfile()
@@ -35,8 +35,6 @@ export default function HomePage() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
 
-      // User's split shares this month
-      const startDate = getCurrentMonth()
       const { data: shares } = await supabase
         .from('split_shares')
         .select('*')
@@ -44,7 +42,6 @@ export default function HomePage() {
 
       setUserSplitShares(shares ?? [])
 
-      // Categories
       const { data: cats } = await supabase
         .from('categories')
         .select('*')
@@ -58,7 +55,6 @@ export default function HomePage() {
   const personalExpenses = expenses.filter((e) => !e.is_split)
   const yesterday = getYesterday()
   const yesterdayPersonal = personalExpenses.filter((e) => e.date === yesterday)
-  const yesterdaySplitShares = userSplitShares.filter(() => false) // simplified
 
   const metrics = calculateBudgetMetrics({
     budget,
@@ -66,75 +62,100 @@ export default function HomePage() {
     userSplitShares,
     paidSplitShares: owedToYou as SplitShare[],
     yesterdayPersonal,
-    yesterdaySplitShares,
+    yesterdaySplitShares: [],
     today: new Date(),
   })
 
   const loading = profileLoading || expLoading
 
-  const greeting = getGreeting()
-  const todayStr = format(new Date(), 'EEEE, MMMM d')
+  const firstName = profile?.name?.split(' ')[0] ?? ''
+  const monthLabel = format(new Date(), 'MMMM')
+  const yearLabel = format(new Date(), 'yyyy')
+
+  // Budget utilization for the progress bar
+  const utilization = metrics.total_budget > 0
+    ? Math.min((metrics.total_budget - metrics.budget_left) / metrics.total_budget, 1)
+    : 0
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Header */}
-      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 px-4 pt-12 pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-neutral-400">{todayStr}</p>
-            <h1 className="text-xl font-bold mt-0.5">
-              {greeting}, {profile?.name?.split(' ')[0] ?? ''}!
-            </h1>
-          </div>
-          <button className="h-9 w-9 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-            <Bell className="h-4.5 w-4.5 text-neutral-500" />
-          </button>
+      <div className="px-5 pt-14 pb-6">
+        <div className="flex items-start justify-between mb-1">
+          <p className="text-sm font-medium" style={{ color: '#8b949e' }}>
+            {firstName ? `Hi ${firstName} 👋` : 'Overview'}
+          </p>
+          <MetricCardCustomizer
+            metric1={metric1}
+            metric2={metric2}
+            onChange={(m1, m2) => updatePrefs(m1, m2)}
+          >
+            <button
+              className="h-8 w-8 flex items-center justify-center rounded-full transition-colors"
+              style={{ background: '#21262d' }}
+            >
+              <Settings2 className="h-4 w-4" style={{ color: '#8b949e' }} />
+            </button>
+          </MetricCardCustomizer>
         </div>
 
-        {/* Budget overview bar */}
-        <div className="mt-4">
+        {/* Large month title */}
+        <h1 className="text-5xl font-black tracking-tight leading-none" style={{ color: 'var(--foreground)' }}>
+          {monthLabel}
+        </h1>
+        <p className="text-lg font-medium mt-0.5" style={{ color: '#8b949e' }}>{yearLabel}</p>
+
+        {/* Budget hero */}
+        <div className="mt-6">
           {loading ? (
-            <Skeleton className="h-16 rounded-xl" />
+            <Skeleton className="h-24 rounded-3xl" />
           ) : (
-            <div className="rounded-xl bg-indigo-500 p-4 text-white">
-              <p className="text-xs opacity-75 mb-1">Budget left this month</p>
-              <p className="text-3xl font-bold tabular-nums">
-                {formatCurrency(metrics.budget_left)}
+            <div
+              className="rounded-3xl p-5"
+              style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}
+            >
+              <p className="text-xs font-medium uppercase tracking-widest mb-2" style={{ color: '#8b949e' }}>
+                Budget remaining
               </p>
-              <p className="text-xs opacity-75 mt-1">
-                of {formatCurrency(metrics.total_budget)} · {metrics.remaining_days} days left
+              <p className="text-4xl font-black tabular-nums" style={{ color: metrics.budget_left >= 0 ? 'var(--foreground)' : '#f85149' }}>
+                {formatCurrency(Math.abs(metrics.budget_left))}
+                {metrics.budget_left < 0 && (
+                  <span className="text-xl font-medium ml-2" style={{ color: '#f85149' }}>over</span>
+                )}
               </p>
+              <div className="mt-3 flex items-center gap-3">
+                {/* Progress bar */}
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(240,246,252,0.08)' }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${utilization * 100}%`,
+                      background: utilization > 0.85 ? '#f85149' : utilization > 0.65 ? '#f59e0b' : '#6366f1',
+                    }}
+                  />
+                </div>
+                <p className="text-xs shrink-0" style={{ color: '#8b949e' }}>
+                  {metrics.remaining_days}d left
+                </p>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="px-4 py-5 space-y-6">
+      <div className="px-5 pb-36 space-y-6">
         {/* Metric Cards */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
-              At a glance
-            </h2>
-            <MetricCardCustomizer
-              metric1={metric1}
-              metric2={metric2}
-              onChange={(m1, m2) => updatePrefs(m1, m2)}
-            />
+        {loading ? (
+          <div className="grid grid-cols-2 gap-3">
+            <Skeleton className="h-24 rounded-3xl" />
+            <Skeleton className="h-24 rounded-3xl" />
           </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 gap-3">
-              <Skeleton className="h-24 rounded-2xl" />
-              <Skeleton className="h-24 rounded-2xl" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              <MetricCard metricKey={metric1} value={metrics[metric1]} index={0} />
-              <MetricCard metricKey={metric2} value={metrics[metric2]} index={1} />
-            </div>
-          )}
-        </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            <MetricCard metricKey={metric1} value={metrics[metric1]} index={0} />
+            <MetricCard metricKey={metric2} value={metrics[metric2]} index={1} />
+          </div>
+        )}
 
         {/* Debt Summary */}
         <DebtSummary youOwe={youOwe as any} owedToYou={owedToYou as any} />
@@ -146,11 +167,4 @@ export default function HomePage() {
       </div>
     </div>
   )
-}
-
-function getGreeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 18) return 'Good afternoon'
-  return 'Good evening'
 }

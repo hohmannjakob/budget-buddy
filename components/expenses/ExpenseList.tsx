@@ -13,9 +13,9 @@ interface Props {
 export default function ExpenseList({ expenses, loading }: Props) {
   if (loading) {
     return (
-      <div className="space-y-2 px-4">
+      <div className="space-y-3 px-5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 rounded-2xl" />
+          <Skeleton key={i} className="h-16 rounded-2xl" style={{ background: '#21262d' }} />
         ))}
       </div>
     )
@@ -23,10 +23,10 @@ export default function ExpenseList({ expenses, loading }: Props) {
 
   if (!expenses.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+      <div className="flex flex-col items-center justify-center py-20 text-center px-4">
         <p className="text-4xl mb-3">🧾</p>
-        <p className="font-medium">No expenses yet</p>
-        <p className="text-sm text-neutral-400 mt-1">Tap + to add your first expense</p>
+        <p className="font-semibold" style={{ color: 'var(--foreground)' }}>No expenses yet</p>
+        <p className="text-sm mt-1" style={{ color: '#8b949e' }}>Tap + to add your first expense</p>
       </div>
     )
   }
@@ -34,23 +34,36 @@ export default function ExpenseList({ expenses, loading }: Props) {
   // Group by date
   const grouped = new Map<string, Expense[]>()
   for (const expense of expenses) {
-    const key = expense.date
-    if (!grouped.has(key)) grouped.set(key, [])
-    grouped.get(key)!.push(expense)
+    if (!grouped.has(expense.date)) grouped.set(expense.date, [])
+    grouped.get(expense.date)!.push(expense)
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {Array.from(grouped.entries()).map(([date, dayExpenses]) => (
         <div key={date}>
-          <div className="px-4 py-2">
-            <p className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
-              {formatGroupDate(date)}
-            </p>
-          </div>
-          <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 mx-4 overflow-hidden">
+          {/* Date header */}
+          <p
+            className="px-5 pb-2 text-xs font-semibold uppercase tracking-widest"
+            style={{ color: '#8b949e' }}
+          >
+            {formatGroupDate(date)}
+          </p>
+
+          {/* Flat list */}
+          <div
+            className="mx-5 rounded-2xl overflow-hidden"
+            style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.06)' }}
+          >
             {dayExpenses.map((expense, i) => (
-              <div key={expense.id} className={i < dayExpenses.length - 1 ? 'border-b border-neutral-50 dark:border-neutral-800' : ''}>
+              <div
+                key={expense.id}
+                style={
+                  i < dayExpenses.length - 1
+                    ? { borderBottom: '1px solid rgba(240,246,252,0.06)' }
+                    : undefined
+                }
+              >
                 <ExpenseItem expense={expense} index={i} />
               </div>
             ))}

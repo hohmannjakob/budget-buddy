@@ -28,31 +28,31 @@ export default function GroupsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 px-4 pt-12 pb-4">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <div className="px-5 pt-14 pb-5">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">Groups</h1>
-          <Button
+          <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>Groups</h1>
+          <button
             onClick={() => setShowCreate(true)}
-            size="sm"
-            className="rounded-full bg-indigo-500 hover:bg-indigo-600 gap-1"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-colors"
+            style={{ background: '#6366f1', color: '#fff' }}
           >
             <Plus className="h-4 w-4" />
             New
-          </Button>
+          </button>
         </div>
       </div>
 
-      <div className="px-4 py-5">
+      <div className="px-5 pb-36">
         {loading ? (
           <div className="space-y-3">
-            {[1, 2].map((i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+            {[1, 2].map((i) => <Skeleton key={i} className="h-20 rounded-2xl" style={{ background: '#21262d' }} />)}
           </div>
         ) : groups.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-4xl mb-3">👥</p>
-            <p className="font-medium">No groups yet</p>
-            <p className="text-sm text-neutral-400 mt-1">Create a group to split expenses</p>
+            <p className="font-semibold" style={{ color: 'var(--foreground)' }}>No groups yet</p>
+            <p className="text-sm mt-1" style={{ color: '#8b949e' }}>Create a group to split expenses</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -64,25 +64,26 @@ export default function GroupsPage() {
       </div>
 
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="dark:bg-neutral-900 dark:border-neutral-800">
+        <DialogContent style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.08)' }}>
           <DialogHeader>
-            <DialogTitle>Create group</DialogTitle>
+            <DialogTitle style={{ color: 'var(--foreground)' }}>Create group</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label>Group name</Label>
+              <Label style={{ color: '#8b949e' }}>Group name</Label>
               <Input
                 placeholder="Flatmates, Trip to Berlin…"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="dark:bg-neutral-800 dark:border-neutral-700"
+                style={{ background: '#21262d', border: '1px solid rgba(240,246,252,0.08)', color: 'var(--foreground)' }}
                 onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
               />
             </div>
             <Button
               onClick={handleCreate}
               disabled={creating || !name.trim()}
-              className="w-full rounded-full bg-indigo-500 hover:bg-indigo-600"
+              className="w-full rounded-full"
+              style={{ background: '#6366f1', color: '#fff' }}
             >
               {creating ? 'Creating…' : 'Create group'}
             </Button>

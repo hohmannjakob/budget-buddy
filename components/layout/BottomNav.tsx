@@ -17,8 +17,18 @@ export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md">
-      <div className="flex items-center justify-around px-2 pb-safe pt-2" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+    <div
+      className="fixed bottom-0 inset-x-0 z-40 flex justify-center pointer-events-none"
+      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+    >
+      <nav
+        className="pointer-events-auto flex items-center gap-1 px-3 py-2 rounded-[28px] shadow-2xl"
+        style={{
+          background: '#1c2128',
+          border: '1px solid rgba(240,246,252,0.08)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+        }}
+      >
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
           return (
@@ -26,20 +36,24 @@ export default function BottomNav() {
               key={href}
               href={href}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors min-w-[52px]',
-                isActive
-                  ? 'text-indigo-500'
-                  : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'
+                'relative flex flex-col items-center gap-0.5 px-4 py-2 rounded-2xl transition-all duration-200',
+                isActive ? 'text-white' : 'text-[#8b949e]'
               )}
             >
-              <Icon className={cn('h-5 w-5', isActive && 'stroke-[2.5]')} />
-              <span className={cn('text-[10px] font-medium', isActive ? 'text-indigo-500' : '')}>
+              {isActive && (
+                <span
+                  className="absolute inset-0 rounded-2xl"
+                  style={{ background: 'rgba(240,246,252,0.1)' }}
+                />
+              )}
+              <Icon className={cn('relative h-5 w-5', isActive ? 'stroke-[2.5]' : 'stroke-[1.5]')} />
+              <span className="relative text-[9px] font-medium tracking-wide">
                 {label}
               </span>
             </Link>
           )
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   )
 }

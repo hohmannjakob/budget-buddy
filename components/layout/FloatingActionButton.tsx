@@ -13,8 +13,12 @@ export default function FloatingActionButton() {
       <motion.button
         onClick={() => setOpen(true)}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-20 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 transition-colors"
-        style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
+        className="fixed bottom-24 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full text-white transition-colors"
+        style={{
+          background: '#ef4444',
+          boxShadow: '0 4px 24px rgba(239,68,68,0.45)',
+          marginBottom: 'env(safe-area-inset-bottom)',
+        }}
         aria-label="Add expense"
       >
         <Plus className="h-6 w-6 stroke-[2.5]" />
