@@ -28,8 +28,8 @@ export default function GroupsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
-      <div className="px-5 pt-14 pb-5">
+    <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
+      <div className="shrink-0 px-5 pt-14 pb-5" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>Groups</h1>
           <button
@@ -43,7 +43,10 @@ export default function GroupsPage() {
         </div>
       </div>
 
-      <div className="px-5 pb-36">
+      <div
+        className="flex-1 overflow-y-auto scroll-area px-5"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)' }}
+      >
         {loading ? (
           <div className="space-y-3">
             {[1, 2].map((i) => <Skeleton key={i} className="h-20 rounded-2xl" style={{ background: '#21262d' }} />)}

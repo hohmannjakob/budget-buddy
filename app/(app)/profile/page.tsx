@@ -57,12 +57,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
-      <div className="px-5 pt-14 pb-5">
+    <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
+      <div className="shrink-0 px-5 pt-14 pb-5" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
         <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>Profile</h1>
       </div>
 
-      <div className="px-5 pb-36 space-y-4">
+      <div
+        className="flex-1 overflow-y-auto scroll-area px-5 space-y-4"
+        style={{ paddingTop: 16, paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)' }}
+      >
         {/* User info */}
         <div
           className="rounded-3xl p-4 flex items-center gap-3"

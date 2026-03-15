@@ -23,9 +23,9 @@ export default function ExpensesPage() {
   const total = expenses.reduce((s, e) => s + e.amount, 0)
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+    <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--background)' }}>
       {/* Header */}
-      <div className="px-5 pt-14 pb-5">
+      <div className="shrink-0 px-5 pt-14 pb-5" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
         <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--foreground)' }}>
           Expenses
         </h1>
@@ -58,7 +58,10 @@ export default function ExpensesPage() {
         </div>
       </div>
 
-      <div className="pb-36">
+      <div
+        className="flex-1 overflow-y-auto scroll-area py-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)' }}
+      >
         <ExpenseList expenses={expenses} loading={loading} />
       </div>
     </div>

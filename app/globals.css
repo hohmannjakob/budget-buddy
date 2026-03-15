@@ -151,23 +151,28 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
   }
   html {
     @apply font-sans;
-    /* Prevent mobile overscroll */
+    height: 100dvh;
+    overflow: hidden;
     overscroll-behavior: none;
   }
-
-  /* Smooth scrolling everywhere */
-  * {
-    -webkit-tap-highlight-color: transparent;
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
   /* Safe area support */
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Smooth momentum scrolling on iOS */
+  .scroll-area {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }

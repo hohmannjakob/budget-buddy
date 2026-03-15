@@ -396,6 +396,7 @@ export default function AddExpenseSheet({ open, onClose }: Props) {
           date,
         })
       }
+      window.dispatchEvent(new CustomEvent('expense-added'))
       handleClose()
     } finally {
       setIsSaving(false)

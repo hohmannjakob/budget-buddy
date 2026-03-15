@@ -42,6 +42,10 @@ export function useExpenses(month?: string) {
     }
 
     load()
+
+    // Re-fetch whenever an expense is added/deleted from anywhere in the app
+    window.addEventListener('expense-added', load)
+    return () => window.removeEventListener('expense-added', load)
   }, [month])
 
   return { expenses, loading }

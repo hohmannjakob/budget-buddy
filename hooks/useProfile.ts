@@ -31,11 +31,19 @@ export function useProfile() {
   return { profile, loading }
 }
 
+const METRIC3_KEY = 'bb_metric_3'
+
 export function useMetricPrefs() {
   const [prefs, setPrefs] = useState<UserMetricPrefs | null>(null)
+  const [metric3, setMetric3] = useState<string>('you_owe')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Load metric_3 from localStorage
+    if (typeof window !== 'undefined') {
+      setMetric3(localStorage.getItem(METRIC3_KEY) ?? 'you_owe')
+    }
+
     const supabase = createClient()
 
     async function load() {
@@ -55,7 +63,7 @@ export function useMetricPrefs() {
     load()
   }, [])
 
-  async function updatePrefs(metric_1: string, metric_2: string) {
+  async function updatePrefs(metric_1: string, metric_2: string, new_metric_3?: string) {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -70,7 +78,12 @@ export function useMetricPrefs() {
       .single()
 
     setPrefs(data)
+
+    if (new_metric_3 !== undefined) {
+      setMetric3(new_metric_3)
+      localStorage.setItem(METRIC3_KEY, new_metric_3)
+    }
   }
 
-  return { prefs, loading, updatePrefs }
+  return { prefs, metric3, loading, updatePrefs }
 }
