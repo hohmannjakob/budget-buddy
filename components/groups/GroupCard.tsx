@@ -15,28 +15,42 @@ export default function GroupCard({ group }: Props) {
 
   return (
     <Link href={`/groups/${group.id}`}>
-      <div className="flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors">
-        <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center shrink-0">
-          <Users className="h-5 w-5 text-indigo-500" />
+      <div
+        className="flex items-center gap-4 px-5 py-4 rounded-3xl transition-all active:scale-[0.98]"
+        style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.06)' }}
+      >
+        <div
+          className="h-12 w-12 rounded-2xl flex items-center justify-center shrink-0"
+          style={{ background: 'rgba(99,102,241,0.15)' }}
+        >
+          <Users className="h-5 w-5" style={{ color: '#818cf8' }} />
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="font-semibold truncate">{group.name}</p>
-          <p className="text-sm text-neutral-400 mt-0.5">{memberCount} member{memberCount !== 1 ? 's' : ''}</p>
+          <p className="font-bold truncate" style={{ color: 'var(--foreground)' }}>{group.name}</p>
+          <p className="text-sm mt-0.5" style={{ color: '#8b949e' }}>
+            {memberCount} member{memberCount !== 1 ? 's' : ''}
+          </p>
         </div>
 
         {/* Member avatars */}
         <div className="flex -space-x-2 shrink-0">
           {group.members?.slice(0, 3).map((member) => (
-            <Avatar key={member.id} className="h-7 w-7 border-2 border-white dark:border-neutral-900">
-              <AvatarFallback className="text-[10px] bg-neutral-200 dark:bg-neutral-700">
+            <Avatar key={member.id} className="h-7 w-7" style={{ border: '2px solid #0d1117' }}>
+              <AvatarFallback
+                className="text-[10px] font-bold"
+                style={{ background: '#21262d', color: '#8b949e' }}
+              >
                 {getInitials(member.profile?.name ?? '?')}
               </AvatarFallback>
             </Avatar>
           ))}
           {memberCount > 3 && (
-            <div className="h-7 w-7 rounded-full border-2 border-white dark:border-neutral-900 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
-              <span className="text-[10px] font-medium text-neutral-500">+{memberCount - 3}</span>
+            <div
+              className="h-7 w-7 rounded-full flex items-center justify-center"
+              style={{ border: '2px solid #0d1117', background: '#21262d' }}
+            >
+              <span className="text-[10px] font-bold" style={{ color: '#8b949e' }}>+{memberCount - 3}</span>
             </div>
           )}
         </div>

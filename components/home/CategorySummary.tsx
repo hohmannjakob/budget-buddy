@@ -1,12 +1,12 @@
 'use client'
 
-import { Progress } from '@/components/ui/progress'
 import { formatCurrency } from '@/lib/utils'
 import type { Expense, Category } from '@/lib/types'
 
-interface CategoryData {
-  category: Category
-  spent: number
+const EMOJI_MAP: Record<string, string> = {
+  utensils: '🍽️', car: '🚗', home: '🏠', tv: '📺',
+  'shopping-bag': '🛍️', heart: '❤️', book: '📚',
+  'piggy-bank': '🐷', 'more-horizontal': '⚙️', circle: '⚪',
 }
 
 interface Props {
@@ -15,62 +15,80 @@ interface Props {
 }
 
 export default function CategorySummary({ expenses, categories }: Props) {
-  // Aggregate spending by category
   const spendingMap = new Map<string, number>()
   for (const expense of expenses) {
     if (expense.category_id) {
-      const prev = spendingMap.get(expense.category_id) ?? 0
-      spendingMap.set(expense.category_id, prev + expense.amount)
+      spendingMap.set(expense.category_id, (spendingMap.get(expense.category_id) ?? 0) + expense.amount)
     }
   }
 
-  const categoryData: CategoryData[] = categories
+  const data = categories
     .filter((c) => spendingMap.has(c.id))
     .map((c) => ({ category: c, spent: spendingMap.get(c.id) ?? 0 }))
     .sort((a, b) => b.spent - a.spent)
+    .slice(0, 5)
 
-  if (!categoryData.length) return null
+  if (!data.length) return null
+
+  const maxSpent = data[0].spent
 
   return (
-    <div className="space-y-3">
-      <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+    <div className="space-y-4">
+      <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#8b949e' }}>
         This month
       </h2>
 
-      <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
-        {categoryData.slice(0, 5).map((item, i) => {
+      <div
+        className="rounded-3xl overflow-hidden"
+        style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.06)' }}
+      >
+        {data.map((item, i) => {
           const budget = item.category.monthly_budget
-          const pct = budget ? Math.min((item.spent / budget) * 100, 100) : null
+          const barPct = (item.spent / maxSpent) * 100
+          const budgetPct = budget ? Math.min((item.spent / budget) * 100, 100) : null
 
           return (
             <div
               key={item.category.id}
-              className="flex items-center gap-3 px-4 py-3 border-b border-neutral-50 dark:border-neutral-800/50 last:border-0"
+              className="flex items-center gap-4 px-5 py-4"
+              style={i < data.length - 1 ? { borderBottom: '1px solid rgba(240,246,252,0.04)' } : undefined}
             >
+              {/* Circular icon */}
               <div
-                className="h-8 w-8 shrink-0 rounded-xl flex items-center justify-center text-base"
-                style={{ backgroundColor: item.category.color + '20' }}
+                className="h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-lg"
+                style={{ background: (item.category.color ?? '#6366f1') + '22' }}
               >
-                <span style={{ color: item.category.color }}>
-                  {getCategoryEmoji(item.category.icon)}
-                </span>
+                {EMOJI_MAP[item.category.icon ?? ''] ?? '💳'}
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-medium truncate">{item.category.name}</p>
-                  <p className="text-sm font-semibold shrink-0 ml-2">{formatCurrency(item.spent)}</p>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                    {item.category.name}
+                  </p>
+                  <p className="text-sm font-bold tabular-nums shrink-0 ml-3" style={{ color: 'var(--foreground)' }}>
+                    {formatCurrency(item.spent)}
+                  </p>
                 </div>
-                {pct !== null && (
-                  <div className="flex items-center gap-2">
-                    <Progress
-                      value={pct}
-                      className="h-1.5 flex-1"
-                    />
-                    <span className="text-xs text-neutral-400 shrink-0">
-                      {formatCurrency(budget! - item.spent)} left
-                    </span>
-                  </div>
+
+                {/* Relative bar */}
+                <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(240,246,252,0.07)' }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${barPct}%`,
+                      background: budgetPct !== null && budgetPct > 90
+                        ? '#f85149'
+                        : (item.category.color ?? '#6366f1'),
+                      opacity: 0.75,
+                    }}
+                  />
+                </div>
+
+                {budget && (
+                  <p className="text-[10px] mt-1" style={{ color: '#8b949e' }}>
+                    {formatCurrency(Math.max(budget - item.spent, 0))} left of {formatCurrency(budget)}
+                  </p>
                 )}
               </div>
             </div>
@@ -79,20 +97,4 @@ export default function CategorySummary({ expenses, categories }: Props) {
       </div>
     </div>
   )
-}
-
-function getCategoryEmoji(icon: string): string {
-  const map: Record<string, string> = {
-    utensils: '🍽️',
-    car: '🚗',
-    home: '🏠',
-    tv: '📺',
-    'shopping-bag': '🛍️',
-    heart: '❤️',
-    book: '📚',
-    'piggy-bank': '🐷',
-    'more-horizontal': '⚙️',
-    circle: '⚪',
-  }
-  return map[icon] ?? '💳'
 }

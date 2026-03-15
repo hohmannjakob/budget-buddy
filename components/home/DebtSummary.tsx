@@ -3,7 +3,7 @@
 import { formatCurrency } from '@/lib/utils'
 import { settleShare } from '@/actions/settlements'
 import { useState } from 'react'
-import { Check, ChevronRight } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getInitials } from '@/lib/utils'
 
@@ -40,16 +40,19 @@ export default function DebtSummary({ youOwe, owedToYou }: Props) {
   }
 
   return (
-    <div className="space-y-3">
-      <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
-        Debts
+    <div className="space-y-4">
+      <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#8b949e' }}>
+        Balances
       </h2>
 
       {youOwe.length > 0 && (
-        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
-          <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-            <span className="text-sm font-medium text-amber-600 dark:text-amber-400">You owe</span>
-            <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{formatCurrency(totalOwe)}</span>
+        <div
+          className="rounded-3xl overflow-hidden"
+          style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.06)' }}
+        >
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
+            <span className="text-sm font-semibold" style={{ color: '#f59e0b' }}>You owe</span>
+            <span className="text-sm font-bold tabular-nums" style={{ color: '#f59e0b' }}>{formatCurrency(totalOwe)}</span>
           </div>
           {youOwe.map((debt) => (
             <DebtRow
@@ -66,10 +69,13 @@ export default function DebtSummary({ youOwe, owedToYou }: Props) {
       )}
 
       {owedToYou.length > 0 && (
-        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
-          <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Owed to you</span>
-            <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totalOwed)}</span>
+        <div
+          className="rounded-3xl overflow-hidden"
+          style={{ background: '#161b22', border: '1px solid rgba(240,246,252,0.06)' }}
+        >
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(240,246,252,0.06)' }}>
+            <span className="text-sm font-semibold" style={{ color: '#10b981' }}>Owed to you</span>
+            <span className="text-sm font-bold tabular-nums" style={{ color: '#10b981' }}>{formatCurrency(totalOwed)}</span>
           </div>
           {owedToYou.map((debt) => (
             <DebtRow
@@ -104,28 +110,37 @@ function DebtRow({
   direction: 'owe' | 'owed'
 }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-50 dark:border-neutral-800/50 last:border-0">
-      <Avatar className="h-8 w-8 shrink-0">
-        <AvatarFallback className="text-xs bg-neutral-100 dark:bg-neutral-800">
+    <div
+      className="flex items-center gap-3 px-5 py-3.5"
+      style={{ borderBottom: '1px solid rgba(240,246,252,0.04)' }}
+    >
+      <Avatar className="h-9 w-9 shrink-0">
+        <AvatarFallback
+          className="text-xs font-bold"
+          style={{ background: '#21262d', color: '#8b949e' }}
+        >
           {getInitials(personName)}
         </AvatarFallback>
       </Avatar>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{title}</p>
-        <p className="text-xs text-neutral-400">
+        <p className="text-sm font-semibold truncate" style={{ color: 'var(--foreground)' }}>{title}</p>
+        <p className="text-xs mt-0.5" style={{ color: '#8b949e' }}>
           {direction === 'owe' ? `To ${personName}` : `From ${personName}`}
         </p>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
-        <span className="text-sm font-semibold">{formatCurrency(amount)}</span>
+      <div className="flex items-center gap-2.5 shrink-0">
+        <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--foreground)' }}>
+          {formatCurrency(amount)}
+        </span>
         <button
           onClick={onSettle}
           disabled={isSettling}
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors disabled:opacity-40"
+          style={{ background: '#21262d' }}
         >
-          <Check className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+          <Check className="h-3.5 w-3.5" style={{ color: '#10b981' }} />
         </button>
       </div>
     </div>
