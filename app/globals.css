@@ -125,5 +125,17 @@
   }
   html {
     @apply font-sans;
+    /* Prevent mobile overscroll */
+    overscroll-behavior: none;
+  }
+
+  /* Smooth scrolling everywhere */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Safe area support */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
